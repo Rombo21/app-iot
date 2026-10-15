@@ -140,8 +140,9 @@ class ConexionDbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NA
 
     fun sincronizarUsuariosRemotos(usuarios: List<User>) {
         val db = writableDatabase
+
+        // 1. Upsert de usuarios remotos (sin sobreescribir cambios locales pendientes)
         for (u in usuarios) {
-            // No sobreescribir registros que tienen cambios locales pendientes
             val existing = db.rawQuery(
                 "SELECT $COL_SYNC_STATUS FROM $TABLE_USUARIOS WHERE LOWER($COL_EMAIL) = LOWER(?)",
                 arrayOf(u.email.trim())
@@ -149,7 +150,7 @@ class ConexionDbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NA
             val localStatus = if (existing.moveToFirst()) existing.getString(0) else null
             existing.close()
 
-            // Si hay un cambio local pendiente, respetarlo (no sobreescribir con dato remoto)
+            // Si hay un cambio local pendiente, respetarlo
             if (localStatus == "PENDING_DELETE" || localStatus == "PENDING_INSERT" || localStatus == "PENDING_UPDATE") {
                 continue
             }
@@ -167,6 +168,31 @@ class ConexionDbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NA
                 db.insert(TABLE_USUARIOS, null, values)
             }
         }
+
+        // 2. Eliminar de SQLite los registros SYNCED que ya NO existen en MySQL
+        //    (fueron borrados desde otro dispositivo o directamente en el servidor)
+        if (usuarios.isNotEmpty()) {
+            val remoteEmails = usuarios.map { it.email.trim().lowercase() }.toSet()
+            val cursor = db.rawQuery(
+                "SELECT $COL_ID, $COL_EMAIL FROM $TABLE_USUARIOS WHERE $COL_SYNC_STATUS = 'SYNCED'",
+                null
+            )
+            val toDelete = mutableListOf<Int>()
+            if (cursor.moveToFirst()) {
+                do {
+                    val id    = cursor.getInt(0)
+                    val email = cursor.getString(1).trim().lowercase()
+                    if (email !in remoteEmails) {
+                        toDelete.add(id)
+                    }
+                } while (cursor.moveToNext())
+            }
+            cursor.close()
+            for (id in toDelete) {
+                db.delete(TABLE_USUARIOS, "$COL_ID = ?", arrayOf(id.toString()))
+            }
+        }
+
         db.close()
     }
 
