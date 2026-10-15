@@ -125,7 +125,7 @@ class UserEditActivity : AppCompatActivity() {
                             setCancelable(false)
                             show()
                         }
-                        RemoteApiManager.deleteUser(this, user.id) { success, errorMsg ->
+                        RemoteApiManager.deleteUser(this, user.id, user.email) { success, errorMsg ->
                             loading.dismissWithAnimation()
                             if (success) {
                                 // Eliminar también de SQLite local

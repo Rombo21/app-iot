@@ -182,6 +182,7 @@ object RemoteApiManager {
     fun deleteUser(
         context: Context,
         id: Int,
+        email: String = "",
         onResult: (Boolean, String) -> Unit
     ) {
         val queue = Volley.newRequestQueue(context)
@@ -192,7 +193,10 @@ object RemoteApiManager {
             },
             { error -> onResult(false, error.message ?: "Error de red") }
         ) {
-            override fun getParams() = mutableMapOf("id" to id.toString())
+            override fun getParams() = mutableMapOf(
+                "id"    to id.toString(),
+                "email" to email
+            )
         }
         queue.add(request)
     }

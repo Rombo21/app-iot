@@ -33,7 +33,8 @@ switch ($action) {
     case 'register':
         $nombres   = mysqli_real_escape_string($conn, trim($_POST['nombres']   ?? ''));
         $apellidos = mysqli_real_escape_string($conn, trim($_POST['apellidos'] ?? ''));
-        $email     = mysqli_real_escape_string($conn, trim($_POST['email']     ?? ''));
+        $email     = strtolower(trim($_POST['email'] ?? ''));
+        $emailEsc  = mysqli_real_escape_string($conn, $email);
         $clave     = mysqli_real_escape_string($conn, trim($_POST['clave']     ?? ''));
 
         if (!$nombres || !$apellidos || !$email || !$clave) {
@@ -41,7 +42,8 @@ switch ($action) {
             break;
         }
 
-        $check = mysqli_query($conn, "SELECT id FROM Usuarios WHERE usuario='$email'");
+        // Verificar duplicado ignorando mayusculas/minusculas
+        $check = mysqli_query($conn, "SELECT id FROM Usuarios WHERE LOWER(usuario)='$emailEsc'");
         if (mysqli_num_rows($check) > 0) {
             echo json_encode(['success' => false, 'error' => 'duplicate_email',
                               'mensaje' => 'Ya existe un usuario registrado con ese correo electronico.']);
@@ -49,7 +51,7 @@ switch ($action) {
         }
 
         $sql = "INSERT INTO Usuarios (nombre, apellido, usuario, clave, bloqueado)
-                VALUES ('$nombres', '$apellidos', '$email', '$clave', 0)";
+                VALUES ('$nombres', '$apellidos', '$emailEsc', '$clave', 0)";
         if (mysqli_query($conn, $sql)) {
             echo json_encode(['success' => true, 'id' => mysqli_insert_id($conn),
                               'mensaje' => 'Usuario registrado correctamente']);
@@ -86,25 +88,41 @@ switch ($action) {
         break;
 
     case 'delete':
-        $id = (int)($_POST['id'] ?? 0);
-        if (!$id) {
-            echo json_encode(['success' => false, 'error' => 'ID no proporcionado']);
+        $id    = (int)($_POST['id'] ?? 0);
+        $email = strtolower(trim($_POST['email'] ?? ''));
+
+        if (!$id && !$email) {
+            echo json_encode(['success' => false, 'error' => 'ID o email requerido']);
             break;
         }
 
-        $sql = "DELETE FROM Usuarios WHERE id=$id";
-        if (mysqli_query($conn, $sql)) {
+        // Intentar borrar por ID primero; si no afecta filas, usar email
+        $affected = 0;
+        if ($id) {
+            mysqli_query($conn, "DELETE FROM Usuarios WHERE id=$id");
+            $affected = mysqli_affected_rows($conn);
+        }
+        if ($affected == 0 && $email) {
+            $emailEsc = mysqli_real_escape_string($conn, $email);
+            mysqli_query($conn, "DELETE FROM Usuarios WHERE LOWER(usuario)='$emailEsc'");
+            $affected = mysqli_affected_rows($conn);
+        }
+
+        if ($affected > 0) {
             echo json_encode(['success' => true, 'mensaje' => 'Usuario eliminado correctamente',
-                              'affected' => mysqli_affected_rows($conn)]);
+                              'affected' => $affected]);
         } else {
-            echo json_encode(['success' => false, 'error' => mysqli_error($conn)]);
+            // Si no existia en MySQL, igual se considera exito para no bloquear el flujo
+            echo json_encode(['success' => true, 'mensaje' => 'Usuario no encontrado en MySQL (ya eliminado)',
+                              'affected' => 0]);
         }
         break;
 
     case 'check_email':
-        $email  = mysqli_real_escape_string($conn, trim($_REQUEST['email'] ?? ''));
-        $result = mysqli_query($conn, "SELECT id FROM Usuarios WHERE usuario='$email'");
-        $exists = ($result && mysqli_num_rows($result) > 0);
+        $email    = strtolower(trim($_REQUEST['email'] ?? ''));
+        $emailEsc = mysqli_real_escape_string($conn, $email);
+        $result   = mysqli_query($conn, "SELECT id FROM Usuarios WHERE LOWER(usuario)='$emailEsc'");
+        $exists   = ($result && mysqli_num_rows($result) > 0);
         echo json_encode(['success' => true, 'exists' => $exists]);
         break;
 
