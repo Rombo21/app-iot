@@ -11,6 +11,7 @@ import android.widget.Toast
 import com.android.volley.Request
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
+import com.example.test.data.RemoteApiManager
 import com.example.test.data.UserRepository
 
 object NetworkSyncManager {
@@ -71,39 +72,47 @@ object NetworkSyncManager {
         isSyncing = true
         val queue = Volley.newRequestQueue(context)
         var syncedCount = 0
+        var errorCount  = 0
+        val total = pendingUsers.size
 
-        // Procesa cada cambio pendiente hacia la API de MySQL
-        for (user in pendingUsers) {
-            val url = "http://52.2.255.205/sync_usuario.php" // Endpoint en AWS
-            val request = object : StringRequest(
-                Method.POST, url,
-                { response ->
-                    UserRepository.markSynced(user.id)
-                    syncedCount++
-                    if (syncedCount == pendingUsers.size) {
-                        isSyncing = false
-                        handler.post {
-                            Toast.makeText(context, "Sincronización completada: $syncedCount cambios sincronizados con MySQL en AWS", Toast.LENGTH_LONG).show()
-                            onFinished?.invoke(syncedCount, true)
-                        }
+        fun checkDone() {
+            if (syncedCount + errorCount == total) {
+                isSyncing = false
+                handler.post {
+                    if (syncedCount > 0) {
+                        Toast.makeText(
+                            context,
+                            "Sincronización completada: $syncedCount cambio(s) sincronizado(s) con MySQL en AWS",
+                            Toast.LENGTH_LONG
+                        ).show()
                     }
+                    onFinished?.invoke(syncedCount, errorCount == 0)
+                }
+            }
+        }
+
+        for (user in pendingUsers) {
+            val request = object : StringRequest(
+                Method.POST,
+                RemoteApiManager.API_SYNC,
+                { _ ->
+                    UserRepository.markSynced(user.id, user.email)
+                    syncedCount++
+                    checkDone()
                 },
-                { error ->
-                    // Si falla el servidor, se mantiene local en SQLite para reintentar (Requerimiento Pauta N° 13)
-                    isSyncing = false
-                    onFinished?.invoke(syncedCount, false)
+                { _ ->
+                    errorCount++
+                    checkDone()
                 }
             ) {
-                override fun getParams(): MutableMap<String, String> {
-                    return mutableMapOf(
-                        "id" to user.id.toString(),
-                        "nombres" to user.nombres,
-                        "apellidos" to user.apellidos,
-                        "email" to user.email,
-                        "clave" to user.clave,
-                        "sync_action" to user.syncStatus
-                    )
-                }
+                override fun getParams(): MutableMap<String, String> = mutableMapOf(
+                    "id"          to user.id.toString(),
+                    "nombres"     to user.nombres,
+                    "apellidos"   to user.apellidos,
+                    "email"       to user.email,
+                    "clave"       to user.clave,
+                    "sync_action" to user.syncStatus
+                )
             }
             queue.add(request)
         }

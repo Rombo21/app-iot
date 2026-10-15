@@ -17,11 +17,11 @@ import org.json.JSONObject
 object RemoteApiManager {
 
     // -------------------------------------------------------
-    private const val BASE_URL = "http://100.62.185.79/"
+    const val BASE_URL = "http://100.62.185.79/"
     private const val API_USUARIOS = "${BASE_URL}usuarios_api.php"
     private const val API_LOGIN    = "${BASE_URL}apiconsultausu.php"
     private const val API_PHPMAILER = "${BASE_URL}enviar_codigo_phpmailer.php"
-    private const val API_SYNC     = "${BASE_URL}sync_usuario.php"
+    const val API_SYNC     = "${BASE_URL}sync_usuario.php"
 
     // -------------------------------------------------------
     // LOGIN: Autenticar credenciales contra MySQL

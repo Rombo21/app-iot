@@ -170,7 +170,7 @@ object UserRepository {
         return dbHelper?.obtenerCambiosPendientes() ?: emptyList()
     }
 
-    fun markSynced(id: Int) {
-        dbHelper?.marcarSincronizado(id)
+    fun markSynced(id: Int, email: String = "") {
+        dbHelper?.marcarSincronizado(id, email)
     }
 }

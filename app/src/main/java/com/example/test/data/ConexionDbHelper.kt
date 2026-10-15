@@ -250,18 +250,23 @@ class ConexionDbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NA
         return pendientes
     }
 
-    fun marcarSincronizado(id: Int) {
+    fun marcarSincronizado(id: Int, email: String = "") {
         val db = writableDatabase
-        val cursor = db.rawQuery("SELECT $COL_SYNC_STATUS FROM $TABLE_USUARIOS WHERE $COL_ID = ?", arrayOf(id.toString()))
+        val cursor = if (email.isNotEmpty()) {
+            db.rawQuery("SELECT $COL_SYNC_STATUS, $COL_ID FROM $TABLE_USUARIOS WHERE $COL_ID = ? OR LOWER($COL_EMAIL) = LOWER(?)", arrayOf(id.toString(), email.trim()))
+        } else {
+            db.rawQuery("SELECT $COL_SYNC_STATUS, $COL_ID FROM $TABLE_USUARIOS WHERE $COL_ID = ?", arrayOf(id.toString()))
+        }
         if (cursor.moveToFirst()) {
             val status = cursor.getString(0)
+            val realId = cursor.getInt(1)
             if (status == "PENDING_DELETE") {
-                db.delete(TABLE_USUARIOS, "$COL_ID = ?", arrayOf(id.toString()))
+                db.delete(TABLE_USUARIOS, "$COL_ID = ?", arrayOf(realId.toString()))
             } else {
                 val values = ContentValues().apply {
                     put(COL_SYNC_STATUS, "SYNCED")
                 }
-                db.update(TABLE_USUARIOS, values, "$COL_ID = ?", arrayOf(id.toString()))
+                db.update(TABLE_USUARIOS, values, "$COL_ID = ?", arrayOf(realId.toString()))
             }
         }
         cursor.close()

@@ -53,29 +53,37 @@ class UserListActivity : AppCompatActivity() {
 
     private fun refreshList() {
         if (NetworkSyncManager.isOnline) {
-            // ─── ONLINE: cargar desde MySQL ─────────────────────
-            binding.tvEmptyState.visibility = View.GONE
-            Toast.makeText(this, "Cargando usuarios desde MySQL (AWS)…", Toast.LENGTH_SHORT).show()
-
-            RemoteApiManager.listUsers(this,
-                onSuccess = { remoteList ->
-                    allUsers = remoteList
-                    UserRepository.syncRemoteUsers(remoteList)
-                    filterUsers(binding.etSearchUser.text.toString())
-                    binding.tvEmptyState.visibility =
-                        if (remoteList.isEmpty()) View.VISIBLE else View.GONE
-                    // Mostrar badge de fuente de datos si existe
-                    showDataSourceBadge(fromRemote = true)
-                },
-                onError = { errorMsg ->
-                    Toast.makeText(this, "Error MySQL: $errorMsg. Usando SQLite local.", Toast.LENGTH_LONG).show()
-                    loadFromSQLite()
-                }
-            )
+            // ─── ONLINE: primero sincronizar cambios pendientes, luego cargar desde MySQL ──
+            NetworkSyncManager.syncPendingChanges(this) { _, _ ->
+                loadFromMySQL()
+            }
+            // Si no había pendientes, syncPendingChanges invoca el callback de inmediato
+            // pero también iniciamos la carga directa para evitar esperas innecesarias
+            if (UserRepository.getPendingSyncUsers().isEmpty()) {
+                loadFromMySQL()
+            }
         } else {
             // ─── OFFLINE: cargar desde SQLite ────────────────────
             loadFromSQLite()
         }
+    }
+
+    private fun loadFromMySQL() {
+        binding.tvEmptyState.visibility = View.GONE
+        RemoteApiManager.listUsers(this,
+            onSuccess = { remoteList ->
+                allUsers = remoteList
+                UserRepository.syncRemoteUsers(remoteList)
+                filterUsers(binding.etSearchUser.text.toString())
+                binding.tvEmptyState.visibility =
+                    if (remoteList.isEmpty()) View.VISIBLE else View.GONE
+                showDataSourceBadge(fromRemote = true)
+            },
+            onError = { errorMsg ->
+                Toast.makeText(this, "Error MySQL: $errorMsg. Usando SQLite local.", Toast.LENGTH_LONG).show()
+                loadFromSQLite()
+            }
+        )
     }
 
     private fun loadFromSQLite() {
