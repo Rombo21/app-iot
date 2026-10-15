@@ -58,16 +58,6 @@ class RegisterActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            // Validar que el email no esté ya registrado
-            if (UserRepository.findUserByEmail(email) != null) {
-                AlertUtils.showError(
-                    this,
-                    "Usuario Existente",
-                    "Ya existe un usuario registrado con este correo electrónico."
-                )
-                return@setOnClickListener
-            }
-
             // Validar coincidencia de contraseña
             if (clave != repetirClave) {
                 AlertUtils.showError(
@@ -89,7 +79,7 @@ class RegisterActivity : AppCompatActivity() {
             }
 
             if (NetworkSyncManager.isOnline) {
-                // ─── ONLINE: registrar en MySQL via API ─────────────────────
+                // ─── ONLINE: MySQL es la fuente de verdad, no validar duplicado localmente ───
                 val loading = SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE).apply {
                     titleText = "Registrando..."
                     setCancelable(false)
@@ -121,7 +111,15 @@ class RegisterActivity : AppCompatActivity() {
                     }
                 }
             } else {
-                // ─── OFFLINE: guardar en SQLite con PENDING_INSERT ────────────
+                // ─── OFFLINE: validar duplicado en SQLite local y guardar con PENDING_INSERT ──
+                if (UserRepository.findUserByEmail(email) != null) {
+                    AlertUtils.showError(
+                        this,
+                        "Usuario Existente",
+                        "Ya existe un usuario registrado con este correo electrónico."
+                    )
+                    return@setOnClickListener
+                }
                 UserRepository.addUser(nombres, apellidos, email, clave, isOffline = true)
                 AlertUtils.showSuccess(this, "¡Registro Guardado Localmente!",
                     "Sin conexión. El registro se sincronizará con MySQL automáticamente al reconectar.") {

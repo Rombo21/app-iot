@@ -141,6 +141,19 @@ class ConexionDbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NA
     fun sincronizarUsuariosRemotos(usuarios: List<User>) {
         val db = writableDatabase
         for (u in usuarios) {
+            // No sobreescribir registros que tienen cambios locales pendientes
+            val existing = db.rawQuery(
+                "SELECT $COL_SYNC_STATUS FROM $TABLE_USUARIOS WHERE LOWER($COL_EMAIL) = LOWER(?)",
+                arrayOf(u.email.trim())
+            )
+            val localStatus = if (existing.moveToFirst()) existing.getString(0) else null
+            existing.close()
+
+            // Si hay un cambio local pendiente, respetarlo (no sobreescribir con dato remoto)
+            if (localStatus == "PENDING_DELETE" || localStatus == "PENDING_INSERT" || localStatus == "PENDING_UPDATE") {
+                continue
+            }
+
             val values = ContentValues().apply {
                 put(COL_NOMBRE, u.nombres)
                 put(COL_APELLIDO, u.apellidos)
