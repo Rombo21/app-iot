@@ -21,7 +21,11 @@ switch ($action) {
         break;
 
     case 'PENDING_UPDATE':
-        $sql = "UPDATE Usuarios SET nombre='$nombres', apellido='$apellidos', clave='$clave' WHERE usuario='$email'";
+        $updates = array("bloqueado = 0");
+        if (!empty($nombres))   $updates[] = "nombre='$nombres'";
+        if (!empty($apellidos)) $updates[] = "apellido='$apellidos'";
+        if (!empty($clave))     $updates[] = "clave='$clave'";
+        $sql = "UPDATE Usuarios SET " . implode(', ', $updates) . " WHERE usuario='$email'";
         $success = mysqli_query($conn, $sql);
         break;
 

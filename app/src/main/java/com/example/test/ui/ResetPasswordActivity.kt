@@ -3,9 +3,12 @@ package com.example.test.ui
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import cn.pedant.SweetAlert.SweetAlertDialog
+import com.example.test.data.RemoteApiManager
 import com.example.test.data.UserRepository
 import com.example.test.databinding.ActivityResetPasswordBinding
 import com.example.test.util.AlertUtils
+import com.example.test.util.NetworkSyncManager
 import com.example.test.util.ValidationUtils
 
 class ResetPasswordActivity : AppCompatActivity() {
@@ -50,18 +53,35 @@ class ResetPasswordActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            // Persistir nueva contraseña
-            UserRepository.updatePassword(email, pass1)
+            fun finishReset(isOffline: Boolean) {
+                UserRepository.updatePassword(email, pass1, isOffline = isOffline)
 
-            AlertUtils.showSuccess(
-                this,
-                "¡Éxito!",
-                "Contraseña actualizada exitosamente. Ahora puede iniciar sesión con su nueva clave."
-            ) {
-                val intent = Intent(this, LoginActivity::class.java)
-                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
-                startActivity(intent)
-                finish()
+                val msg = if (isOffline) {
+                    "Contraseña actualizada en base de datos local y cuenta reactivada.\nSe sincronizará con MySQL en la nube al recuperar la conexión."
+                } else {
+                    "Contraseña actualizada exitosamente y cuenta reactivada. Ahora puede iniciar sesión con su nueva clave."
+                }
+
+                AlertUtils.showSuccess(this, "¡Éxito!", msg) {
+                    val intent = Intent(this, LoginActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+                    startActivity(intent)
+                    finish()
+                }
+            }
+
+            if (NetworkSyncManager.isOnline) {
+                val loading = SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE).apply {
+                    titleText = "Actualizando clave..."
+                    setCancelable(false)
+                    show()
+                }
+                RemoteApiManager.resetPassword(this, email, pass1) { success, _ ->
+                    loading.dismissWithAnimation()
+                    finishReset(isOffline = !success)
+                }
+            } else {
+                finishReset(isOffline = true)
             }
         }
     }

@@ -126,8 +126,28 @@ switch ($action) {
         echo json_encode(['success' => true, 'exists' => $exists]);
         break;
 
+    case 'reset_password':
+        $email    = strtolower(trim($_POST['email'] ?? ''));
+        $emailEsc = mysqli_real_escape_string($conn, $email);
+        $clave    = mysqli_real_escape_string($conn, trim($_POST['clave'] ?? ''));
+
+        if (!$email || !$clave) {
+            echo json_encode(['success' => false, 'error' => 'Email y clave obligatorios']);
+            break;
+        }
+
+        $sql = "UPDATE Usuarios 
+                SET clave='$clave', bloqueado=0, codigo_recuperacion=NULL, fecha_expiracion_codigo=NULL 
+                WHERE LOWER(usuario)='$emailEsc'";
+        if (mysqli_query($conn, $sql)) {
+            echo json_encode(['success' => true, 'mensaje' => 'Contraseña actualizada y cuenta reactivada']);
+        } else {
+            echo json_encode(['success' => false, 'error' => mysqli_error($conn)]);
+        }
+        break;
+
     default:
-        echo json_encode(['success' => false, 'error' => "Accion no reconocida. Disponibles: list_users, register, update, delete, check_email"]);
+        echo json_encode(['success' => false, 'error' => "Accion no reconocida. Disponibles: list_users, register, update, delete, check_email, reset_password"]);
         break;
 }
 

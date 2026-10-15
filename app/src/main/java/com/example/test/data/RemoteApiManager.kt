@@ -226,6 +226,31 @@ object RemoteApiManager {
     }
 
     // -------------------------------------------------------
+    // RESTABLECER CONTRASEÑA Y DESBLOQUEAR EN MYSQL
+    // -------------------------------------------------------
+    fun resetPassword(
+        context: Context,
+        email: String,
+        newPass: String,
+        onResult: (Boolean, String) -> Unit
+    ) {
+        val queue = Volley.newRequestQueue(context)
+        val request = object : StringRequest(Method.POST, "$API_USUARIOS?action=reset_password",
+            { resp ->
+                val json = JSONObject(resp)
+                onResult(json.optBoolean("success"), json.optString("error", ""))
+            },
+            { error -> onResult(false, error.message ?: "Error de red") }
+        ) {
+            override fun getParams() = mutableMapOf(
+                "email" to email,
+                "clave" to newPass
+            )
+        }
+        queue.add(request)
+    }
+
+    // -------------------------------------------------------
     // Helper: encode basico para URL (solo espacios)
     // -------------------------------------------------------
     private fun encode(s: String): String = s.replace(" ", "%20").replace("@", "%40")
