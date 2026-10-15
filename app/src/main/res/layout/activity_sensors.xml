@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:background="@color/white">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:padding="24dp">
+
+        <ImageView
+            android:id="@+id/ivLogo"
+            android:layout_width="160dp"
+            android:layout_height="100dp"
+            android:layout_marginTop="20dp"
+            android:contentDescription="@string/app_name"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_app_logo" />
+
+        <TextView
+            android:id="@+id/tvTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="DATOS SENSORES"
+            android:textColor="@color/primary_dark"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tvSensorDateTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:text="Actualizando fecha y hora..."
+            android:textColor="@color/text_muted"
+            android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/tvSensorStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="Conectando a pnk.cl..."
+            android:textColor="#2E7D32"
+            android:textSize="11sp"
+            android:textStyle="bold" />
+
+        <!-- Sensor Humedad -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/ivSensorHumidity"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:contentDescription="Humedad"
+                android:src="@drawable/ic_sensor_humidity" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="HUMEDAD"
+                    android:textColor="#29B6F6"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvHumidityValue"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="--%"
+                    android:textColor="#1565C0"
+                    android:textSize="26sp"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- Sensor Temperatura -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/ivSensorTemp"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:contentDescription="Temperatura"
+                android:src="@drawable/tempbaja" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="TEMPERATURA"
+                    android:textColor="#FFA726"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvTempValue"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="18°"
+                    android:textColor="#E65100"
+                    android:textSize="26sp"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- Actuadores / Dispositivos: Ampolleta y Linterna -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:text="ACTUADORES Y DISPOSITIVOS"
+            android:textColor="@color/text_muted"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <!-- Ampolleta Toggle -->
+            <LinearLayout
+                android:id="@+id/btnToggleBulb"
+                android:layout_width="130dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:background="@drawable/bg_table_container"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:padding="12dp"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:id="@+id/ivBulb"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:contentDescription="Ampolleta"
+                    android:src="@drawable/ic_bulb_on" />
+
+                <TextView
+                    android:id="@+id/tvBulbState"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="ENCENDIDA"
+                    android:textColor="@color/primary_dark"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+
+            <!-- Linterna Toggle -->
+            <LinearLayout
+                android:id="@+id/btnToggleTorch"
+                android:layout_width="130dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:background="@drawable/bg_table_container"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:padding="12dp"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:id="@+id/ivTorch"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:contentDescription="Linterna"
+                    android:src="@drawable/ic_torch_on" />
+
+                <TextView
+                    android:id="@+id/tvTorchState"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="ENCENDIDA"
+                    android:textColor="@color/primary_dark"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </LinearLayout>
+</ScrollView>

@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:background="@color/white">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:padding="24dp">
+
+        <ImageView
+            android:id="@+id/ivLogo"
+            android:layout_width="160dp"
+            android:layout_height="100dp"
+            android:layout_marginTop="20dp"
+            android:contentDescription="@string/app_name"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_app_logo" />
+
+        <TextView
+            android:id="@+id/tvTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="DATOS DESARROLLADOR(ES)"
+            android:textColor="@color/primary_dark"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <!-- Avatar / Ilustración oficial -->
+        <ImageView
+            android:id="@+id/ivAvatar"
+            android:layout_width="140dp"
+            android:layout_height="140dp"
+            android:layout_marginTop="28dp"
+            android:contentDescription="Avatar"
+            android:src="@drawable/ic_developer_avatar" />
+
+        <!-- Nombre y Apellidos -->
+        <TextView
+            android:id="@+id/tvDevName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="EMANUEL JESUS ROMÁN SERÓN"
+            android:textColor="@color/primary_dark"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <!-- Tarjeta con Información Detallada (Requerimiento 12) -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            app:cardBackgroundColor="#F8F9FA"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="0dp"
+            app:strokeColor="@color/gray_border"
+            app:strokeWidth="1dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="20dp">
+
+                <!-- Rol -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Rol del Desarrollador:"
+                    android:textColor="@color/text_muted"
+                    android:textSize="13sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:text="Desarrollador Fullstack"
+                    android:textColor="@color/primary_dark"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="12dp"
+                    android:layout_marginBottom="12dp"
+                    android:background="#E5E7EB" />
+
+                <!-- Correo Institucional -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Correo Institucional:"
+                    android:textColor="@color/text_muted"
+                    android:textSize="13sp" />
+
+                <TextView
+                    android:id="@+id/tvDevEmail"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:text="emanuel.roman@inacapmail.cl"
+                    android:textColor="@color/primary_red"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="12dp"
+                    android:layout_marginBottom="12dp"
+                    android:background="#E5E7EB" />
+
+                <!-- Institución y Carrera -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Institución / Carrera / Sección:"
+                    android:textColor="@color/text_muted"
+                    android:textSize="13sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:text="Inacap - Ingeniería en Informática - Aplicaciones Móviles para IoT D-IEI-N4-P2-C1"
+                    android:textColor="@color/primary_dark"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Botones con enlaces interactivos a GitHub, LinkedIn y Portafolio -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:baselineAligned="false"
+            android:orientation="horizontal">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnGithub"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_marginEnd="6dp"
+                android:layout_weight="1"
+                android:backgroundTint="@color/primary_dark"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:text="GitHub"
+                android:textColor="@color/white"
+                android:textSize="10sp"
+                android:maxLines="1"
+                app:cornerRadius="8dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnLinkedin"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_marginStart="3dp"
+                android:layout_marginEnd="3dp"
+                android:layout_weight="1"
+                android:backgroundTint="#0077B5"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:text="LinkedIn"
+                android:textColor="@color/white"
+                android:textSize="10sp"
+                android:maxLines="1"
+                app:cornerRadius="8dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnPortfolio"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_marginStart="6dp"
+                android:layout_weight="1"
+                android:backgroundTint="@color/primary_red"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:text="Portafolio"
+                android:textColor="@color/white"
+                android:textSize="10sp"
+                android:maxLines="1"
+                app:cornerRadius="8dp" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+</ScrollView>

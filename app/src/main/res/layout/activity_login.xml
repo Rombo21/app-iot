@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:background="@color/white">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:padding="28dp">
+
+        <ImageView
+            android:id="@+id/ivLogo"
+            android:layout_width="160dp"
+            android:layout_height="110dp"
+            android:layout_marginTop="32dp"
+            android:contentDescription="@string/app_name"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_app_logo" />
+
+        <TextView
+            android:id="@+id/tvWelcome"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="Bienvenido a mi APP"
+            android:textColor="@color/primary_dark"
+            android:textSize="18sp"
+            android:textStyle="normal" />
+
+        <!-- Campo Usuario / Email -->
+        <EditText
+            android:id="@+id/etUserEmail"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:layout_marginTop="28dp"
+            android:background="@drawable/bg_input_field"
+            android:gravity="center"
+            android:hint="INGRESE SU CORREO"
+            android:importantForAutofill="no"
+            android:inputType="textEmailAddress"
+            android:textColor="@color/primary_dark"
+            android:textColorHint="@color/text_muted"
+            android:textSize="14sp" />
+
+        <!-- Campo Clave -->
+        <EditText
+            android:id="@+id/etPassword"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/bg_input_field"
+            android:gravity="center"
+            android:hint="INGRESE CLAVE"
+            android:importantForAutofill="no"
+            android:inputType="textPassword"
+            android:textColor="@color/primary_dark"
+            android:textColorHint="@color/text_muted"
+            android:textSize="14sp" />
+
+        <!-- Botón INGRESAR -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnIngresar"
+            android:layout_width="match_parent"
+            android:layout_height="54dp"
+            android:layout_marginTop="24dp"
+            android:backgroundTint="@color/primary_red"
+            android:text="INGRESAR"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:cornerRadius="8dp" />
+
+        <!-- Enlace Registrarme -->
+        <TextView
+            android:id="@+id/tvRegistrarme"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:padding="6dp"
+            android:text="Registrarme"
+            android:textColor="@color/primary_red"
+            android:textSize="15sp"
+            android:textStyle="bold" />
+
+        <!-- Enlace Olvide mi Contraseña -->
+        <TextView
+            android:id="@+id/tvOlvideClave"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:padding="6dp"
+            android:text="¿Olvide mi Contraseña?"
+            android:textColor="@color/primary_red"
+            android:textSize="15sp"
+            android:textStyle="bold" />
+
+    </LinearLayout>
+</ScrollView>

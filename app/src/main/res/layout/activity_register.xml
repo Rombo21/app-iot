@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:background="@color/white">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:padding="28dp">
+
+        <ImageView
+            android:id="@+id/ivLogo"
+            android:layout_width="160dp"
+            android:layout_height="100dp"
+            android:layout_marginTop="20dp"
+            android:contentDescription="@string/app_name"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_app_logo" />
+
+        <TextView
+            android:id="@+id/tvTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="REGISTRO DE USUARIO"
+            android:textColor="@color/primary_dark"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <!-- NOMBRES -->
+        <EditText
+            android:id="@+id/etNombres"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/bg_input_field"
+            android:gravity="center"
+            android:hint="INGRESE NOMBRES"
+            android:importantForAutofill="no"
+            android:inputType="textPersonName"
+            android:textColor="@color/primary_dark"
+            android:textColorHint="@color/text_muted"
+            android:textSize="14sp" />
+
+        <!-- APELLIDOS -->
+        <EditText
+            android:id="@+id/etApellidos"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/bg_input_field"
+            android:gravity="center"
+            android:hint="INGRESE APELLIDOS"
+            android:importantForAutofill="no"
+            android:inputType="textPersonName"
+            android:textColor="@color/primary_dark"
+            android:textColorHint="@color/text_muted"
+            android:textSize="14sp" />
+
+        <!-- E-MAIL -->
+        <EditText
+            android:id="@+id/etEmail"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/bg_input_field"
+            android:gravity="center"
+            android:hint="INGRESE E-MAIL"
+            android:importantForAutofill="no"
+            android:inputType="textEmailAddress"
+            android:textColor="@color/primary_dark"
+            android:textColorHint="@color/text_muted"
+            android:textSize="14sp" />
+
+        <!-- CLAVE -->
+        <EditText
+            android:id="@+id/etClave"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/bg_input_field"
+            android:gravity="center"
+            android:hint="INGRESE CLAVE"
+            android:importantForAutofill="no"
+            android:inputType="textPassword"
+            android:textColor="@color/primary_dark"
+            android:textColorHint="@color/text_muted"
+            android:textSize="14sp" />
+
+        <!-- REPETIR CLAVE -->
+        <EditText
+            android:id="@+id/etRepetirClave"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/bg_input_field"
+            android:gravity="center"
+            android:hint="REPETIR CLAVE"
+            android:importantForAutofill="no"
+            android:inputType="textPassword"
+            android:textColor="@color/primary_dark"
+            android:textColorHint="@color/text_muted"
+            android:textSize="14sp" />
+
+        <!-- BOTON REGISTRAR -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnRegistrar"
+            android:layout_width="match_parent"
+            android:layout_height="54dp"
+            android:layout_marginTop="20dp"
+            android:backgroundTint="@color/primary_red"
+            android:text="REGISTRAR"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:cornerRadius="8dp" />
+
+    </LinearLayout>
+</ScrollView>

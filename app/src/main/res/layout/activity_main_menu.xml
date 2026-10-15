@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    android:padding="24dp">
+
+    <ImageView
+        android:id="@+id/ivLogo"
+        android:layout_width="160dp"
+        android:layout_height="100dp"
+        android:layout_marginTop="24dp"
+        android:contentDescription="@string/app_name"
+        android:scaleType="fitCenter"
+        android:src="@drawable/ic_app_logo" />
+
+    <!-- Fecha y hora dinámica exacta a la maqueta (Fecha/Hora:16-10-2025, 20:25:30) -->
+    <TextView
+        android:id="@+id/tvDateTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="Fecha/Hora: --"
+        android:textColor="@color/primary_dark"
+        android:textSize="15sp"
+        android:textStyle="normal" />
+
+    <!-- 1. OPCION: CRUD USUARIO -->
+    <RelativeLayout
+        android:id="@+id/btnMenuCrud"
+        android:layout_width="match_parent"
+        android:layout_height="72dp"
+        android:layout_marginTop="48dp"
+        android:background="@drawable/bg_menu_item"
+        android:clickable="true"
+        android:focusable="true"
+        android:foreground="?attr/selectableItemBackground">
+
+        <ImageView
+            android:id="@+id/icCrud"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="8dp"
+            android:contentDescription="CRUD"
+            android:src="@drawable/ic_crud_users" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toEndOf="@+id/icCrud"
+            android:layout_marginStart="16dp"
+            android:text="CRUD USUARIO"
+            android:textColor="@color/text_muted"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+    </RelativeLayout>
+
+    <!-- 2. OPCION: DATOS SENSOR -->
+    <RelativeLayout
+        android:id="@+id/btnMenuSensores"
+        android:layout_width="match_parent"
+        android:layout_height="72dp"
+        android:layout_marginTop="24dp"
+        android:background="@drawable/bg_menu_item"
+        android:clickable="true"
+        android:focusable="true"
+        android:foreground="?attr/selectableItemBackground">
+
+        <ImageView
+            android:id="@+id/icSensor"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="10dp"
+            android:contentDescription="Sensores"
+            android:src="@drawable/ic_sensor_cloud" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toEndOf="@+id/icSensor"
+            android:layout_marginStart="18dp"
+            android:text="DATOS SENSOR"
+            android:textColor="@color/text_muted"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+    </RelativeLayout>
+
+    <!-- 3. OPCION: DESARROLLADOR -->
+    <RelativeLayout
+        android:id="@+id/btnMenuDesarrollador"
+        android:layout_width="match_parent"
+        android:layout_height="72dp"
+        android:layout_marginTop="24dp"
+        android:background="@drawable/bg_menu_item"
+        android:clickable="true"
+        android:focusable="true"
+        android:foreground="?attr/selectableItemBackground">
+
+        <ImageView
+            android:id="@+id/icDev"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="10dp"
+            android:contentDescription="Desarrollador"
+            android:src="@drawable/ic_menu_dev" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toEndOf="@+id/icDev"
+            android:layout_marginStart="18dp"
+            android:text="DESARROLLADOR"
+            android:textColor="@color/text_muted"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+    </RelativeLayout>
+
+</LinearLayout>
