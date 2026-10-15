@@ -138,6 +138,25 @@ class ConexionDbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NA
         return user
     }
 
+    fun sincronizarUsuariosRemotos(usuarios: List<User>) {
+        val db = writableDatabase
+        for (u in usuarios) {
+            val values = ContentValues().apply {
+                put(COL_NOMBRE, u.nombres)
+                put(COL_APELLIDO, u.apellidos)
+                put(COL_EMAIL, u.email)
+                put(COL_CLAVE, u.clave.ifEmpty { "Password123!" })
+                put(COL_BLOQUEADO, if (u.isBlocked) 1 else 0)
+                put(COL_SYNC_STATUS, "SYNCED")
+            }
+            val updated = db.update(TABLE_USUARIOS, values, "LOWER($COL_EMAIL) = LOWER(?)", arrayOf(u.email.trim()))
+            if (updated == 0) {
+                db.insert(TABLE_USUARIOS, null, values)
+            }
+        }
+        db.close()
+    }
+
     fun actualizarUsuario(id: Int, nombres: String, apellidos: String, email: String, isOffline: Boolean = false): Int {
         val db = writableDatabase
         val values = ContentValues().apply {
@@ -148,7 +167,10 @@ class ConexionDbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NA
                 put(COL_SYNC_STATUS, "PENDING_UPDATE")
             }
         }
-        val affected = db.update(TABLE_USUARIOS, values, "$COL_ID = ?", arrayOf(id.toString()))
+        var affected = db.update(TABLE_USUARIOS, values, "$COL_ID = ?", arrayOf(id.toString()))
+        if (affected == 0) {
+            affected = db.update(TABLE_USUARIOS, values, "LOWER($COL_EMAIL) = LOWER(?)", arrayOf(email.trim()))
+        }
         db.close()
         return affected
     }
@@ -177,16 +199,24 @@ class ConexionDbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NA
         return affected > 0
     }
 
-    fun eliminarUsuario(id: Int, isOffline: Boolean = false): Boolean {
+    fun eliminarUsuario(id: Int, email: String = "", isOffline: Boolean = false): Boolean {
         val db = writableDatabase
         val affected = if (isOffline) {
             // Soft delete para que cuando haya internet se sincronice el DELETE en MySQL
             val values = ContentValues().apply {
                 put(COL_SYNC_STATUS, "PENDING_DELETE")
             }
-            db.update(TABLE_USUARIOS, values, "$COL_ID = ?", arrayOf(id.toString()))
+            var rows = db.update(TABLE_USUARIOS, values, "$COL_ID = ?", arrayOf(id.toString()))
+            if (rows == 0 && email.isNotEmpty()) {
+                rows = db.update(TABLE_USUARIOS, values, "LOWER($COL_EMAIL) = LOWER(?)", arrayOf(email.trim()))
+            }
+            rows
         } else {
-            db.delete(TABLE_USUARIOS, "$COL_ID = ?", arrayOf(id.toString()))
+            var rows = db.delete(TABLE_USUARIOS, "$COL_ID = ?", arrayOf(id.toString()))
+            if (rows == 0 && email.isNotEmpty()) {
+                rows = db.delete(TABLE_USUARIOS, "LOWER($COL_EMAIL) = LOWER(?)", arrayOf(email.trim()))
+            }
+            rows
         }
         db.close()
         return affected > 0

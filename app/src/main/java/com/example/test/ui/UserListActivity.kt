@@ -36,8 +36,14 @@ class UserListActivity : AppCompatActivity() {
 
     private fun setupRecyclerView() {
         adapter = UserAdapter(emptyList()) { selectedUser ->
-            val intent = Intent(this, UserEditActivity::class.java)
-            intent.putExtra("user_id", selectedUser.id)
+            val intent = Intent(this, UserEditActivity::class.java).apply {
+                putExtra("user_id", selectedUser.id)
+                putExtra("user_nombres", selectedUser.nombres)
+                putExtra("user_apellidos", selectedUser.apellidos)
+                putExtra("user_email", selectedUser.email)
+                putExtra("user_clave", selectedUser.clave)
+                putExtra("user_is_blocked", selectedUser.isBlocked)
+            }
             startActivity(intent)
         }
         binding.rvUsers.layoutManager =
@@ -54,6 +60,7 @@ class UserListActivity : AppCompatActivity() {
             RemoteApiManager.listUsers(this,
                 onSuccess = { remoteList ->
                     allUsers = remoteList
+                    UserRepository.syncRemoteUsers(remoteList)
                     filterUsers(binding.etSearchUser.text.toString())
                     binding.tvEmptyState.visibility =
                         if (remoteList.isEmpty()) View.VISIBLE else View.GONE

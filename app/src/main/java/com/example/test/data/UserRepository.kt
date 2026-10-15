@@ -22,9 +22,9 @@ object UserRepository {
         }
     }
 
-    fun addUser(nombres: String, apellidos: String, email: String, clave: String, isOffline: Boolean = false): User {
+    fun addUser(nombres: String, apellidos: String, email: String, clave: String, isOffline: Boolean = false, remoteId: Int? = null): User {
         val user = User(
-            id = nextId++,
+            id = remoteId ?: nextId++,
             nombres = nombres.trim(),
             apellidos = apellidos.trim(),
             email = email.trim(),
@@ -34,7 +34,9 @@ object UserRepository {
         )
         if (dbHelper != null) {
             val insertedId = dbHelper!!.insertarUsuario(user, pendingSync = isOffline)
-            user.id = insertedId.toInt()
+            if (remoteId == null) {
+                user.id = insertedId.toInt()
+            }
         } else {
             inMemoryUsers.add(user)
         }
@@ -112,11 +114,15 @@ object UserRepository {
         findUserByEmail(email)?.isBlocked = blocked
     }
 
-    fun deleteUser(id: Int, isOffline: Boolean = false): Boolean {
+    fun syncRemoteUsers(remoteUsers: List<User>) {
+        dbHelper?.sincronizarUsuariosRemotos(remoteUsers)
+    }
+
+    fun deleteUser(id: Int, email: String = "", isOffline: Boolean = false): Boolean {
         if (dbHelper != null) {
-            return dbHelper!!.eliminarUsuario(id, isOffline)
+            return dbHelper!!.eliminarUsuario(id, email, isOffline)
         }
-        return inMemoryUsers.removeAll { it.id == id }
+        return inMemoryUsers.removeAll { it.id == id || (email.isNotEmpty() && it.email.equals(email, ignoreCase = true)) }
     }
 
     // ==========================================

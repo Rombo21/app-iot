@@ -99,8 +99,8 @@ class RegisterActivity : AppCompatActivity() {
                     loading.dismissWithAnimation()
                     when (result) {
                         is RemoteApiManager.RegisterResult.Success -> {
-                            // Guardar también en SQLite local sincronizado
-                            UserRepository.addUser(nombres, apellidos, email, clave, isOffline = false)
+                            // Guardar también en SQLite local sincronizado con el ID de MySQL
+                            UserRepository.addUser(nombres, apellidos, email, clave, isOffline = false, remoteId = result.id)
                             AlertUtils.showSuccess(this, "¡Registro Exitoso!",
                                 "Usuario registrado en MySQL correctamente. Ahora puede iniciar sesión.") {
                                 goToLogin()

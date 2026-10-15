@@ -21,8 +21,18 @@ class UserEditActivity : AppCompatActivity() {
         binding = ActivityUserEditBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val userId = intent.getIntExtra("user_id", -1)
-        currentUser = UserRepository.getUserById(userId)
+        val userId    = intent.getIntExtra("user_id", -1)
+        val nombres   = intent.getStringExtra("user_nombres") ?: ""
+        val apellidos = intent.getStringExtra("user_apellidos") ?: ""
+        val email     = intent.getStringExtra("user_email") ?: ""
+        val clave     = intent.getStringExtra("user_clave") ?: ""
+        val isBlocked = intent.getBooleanExtra("user_is_blocked", false)
+
+        currentUser = if (nombres.isNotEmpty() || email.isNotEmpty()) {
+            User(userId, nombres, apellidos, email, clave, isBlocked)
+        } else {
+            UserRepository.getUserById(userId)
+        }
 
         if (currentUser == null) {
             AlertUtils.showError(this, "Error", "No se encontró el usuario seleccionado.") {
@@ -119,19 +129,19 @@ class UserEditActivity : AppCompatActivity() {
                             loading.dismissWithAnimation()
                             if (success) {
                                 // Eliminar también de SQLite local
-                                UserRepository.deleteUser(user.id, isOffline = false)
+                                UserRepository.deleteUser(user.id, user.email, isOffline = false)
                                 AlertUtils.showSuccess(this, "¡Eliminado!",
                                     "Usuario eliminado de MySQL correctamente.") { finish() }
                             } else {
                                 // Fallo → marcar para eliminar al reconectar
-                                UserRepository.deleteUser(user.id, isOffline = true)
+                                UserRepository.deleteUser(user.id, user.email, isOffline = true)
                                 AlertUtils.showWarning(this, "Sin Conexión",
                                     "No se pudo conectar. Usuario marcado para eliminar al reconectar.") { finish() }
                             }
                         }
                     } else {
                         // ─── OFFLINE: soft delete en SQLite ────────────────
-                        UserRepository.deleteUser(user.id, isOffline = true)
+                        UserRepository.deleteUser(user.id, user.email, isOffline = true)
                         AlertUtils.showSuccess(this, "¡Marcado para Eliminar!",
                             "Se eliminará de MySQL automáticamente al recuperar la conexión.") { finish() }
                     }
