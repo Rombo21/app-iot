@@ -37,9 +37,9 @@ try {
     $mail->Host       = 'smtp.gmail.com';
     $mail->SMTPAuth   = true;
     $mail->Username   = 'emanuelromanseron@gmail.com';
-    $mail->Password   = 'onxgsklrrnjymumq';
-    $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-    $mail->Port       = 587;
+    $mail->Password   = 'sofsfkfxlkwegexb';
+    $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
+    $mail->Port       = 465;
 
     $mail->setFrom('emanuelromanseron@gmail.com', 'App Movil IoT');
     $mail->addAddress($email);
