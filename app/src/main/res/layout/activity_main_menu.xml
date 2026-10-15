@@ -128,6 +128,8 @@
             android:textSize="16sp"
             android:textStyle="bold" />
 
+    </RelativeLayout>
+
     <!-- 4. OPCION: CERRAR SESIÓN -->
     <RelativeLayout
         android:id="@+id/btnCerrarSesion"
