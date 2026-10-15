@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 header('Content-Type: application/json; charset=utf-8');
 
 // ============================================================
@@ -11,17 +11,8 @@ header('Content-Type: application/json; charset=utf-8');
 //   check_email  -> Verifica si un email ya esta registrado
 // ============================================================
 
-$host = 'localhost';
-$user = 'root';
-$pass = 'clave';
-$db   = 'pnkcl_iot';
+require_once __DIR__ . '/db.php';
 
-$conn = mysqli_connect($host, $user, $pass, $db);
-if (!$conn) {
-    echo json_encode(['success' => false, 'error' => 'Error de conexion a la base de datos']);
-    exit();
-}
-mysqli_set_charset($conn, 'utf8');
 
 $action = isset($_REQUEST['action']) ? trim($_REQUEST['action']) : '';
 

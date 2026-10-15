@@ -22,7 +22,7 @@ class DeveloperInfoActivity : AppCompatActivity() {
     private fun setupExternalLinks() {
         // Enlace a GitHub
         binding.btnGithub.setOnClickListener {
-            openUrl("https://github.com")
+            openUrl("https://github.com/Rombo21/app-iot")
         }
 
         // Enlace a LinkedIn
@@ -32,7 +32,7 @@ class DeveloperInfoActivity : AppCompatActivity() {
 
         // Enlace a Portafolio
         binding.btnPortfolio.setOnClickListener {
-            openUrl("https://github.com")
+            openUrl("https://github.com/Rombo21/app-iot")
         }
     }
 

@@ -13,4 +13,5 @@ app/build
 *.apk
 *.aab
 extracted_raw_imgs/
-
+Importante/
+*.pem

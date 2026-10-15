@@ -1,18 +1,8 @@
 <?php
 header('Content-Type: application/json; charset=utf-8');
 
-$host = 'localhost';
-$user = 'root';
-$pass = 'clave';
-$db   = 'pnkcl_iot';
+require_once __DIR__ . '/db.php';
 
-$conn = mysqli_connect($host, $user, $pass, $db);
-if (!$conn) {
-    echo json_encode(array('success' => false, 'error' => 'No se pudo conectar a MySQL'));
-    exit();
-}
-
-mysqli_set_charset($conn, 'utf8');
 
 $action    = isset($_POST['sync_action']) ? trim($_POST['sync_action']) : '';
 $nombres   = isset($_POST['nombres']) ? mysqli_real_escape_string($conn, trim($_POST['nombres'])) : '';

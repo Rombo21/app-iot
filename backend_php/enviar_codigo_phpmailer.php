@@ -4,20 +4,15 @@ header('Content-Type: application/json; charset=utf-8');
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
-require 'PHPMailer/src/Exception.php';
-require 'PHPMailer/src/PHPMailer.php';
-require 'PHPMailer/src/SMTP.php';
-
-$host = 'localhost';
-$user = 'root';
-$pass = 'clave';
-$db   = 'pnkcl_iot';
-
-$conn = mysqli_connect($host, $user, $pass, $db);
-if (!$conn) {
-    echo json_encode(array('success' => false, 'error' => 'Error de conexión a la base de datos'));
-    exit();
+if (file_exists(__DIR__ . '/vendor/autoload.php')) {
+    require_once __DIR__ . '/vendor/autoload.php';
+} else {
+    require_once 'PHPMailer/src/Exception.php';
+    require_once 'PHPMailer/src/PHPMailer.php';
+    require_once 'PHPMailer/src/SMTP.php';
 }
+
+require_once __DIR__ . '/db.php';
 
 $email = isset($_POST['email']) ? mysqli_real_escape_string($conn, trim($_POST['email'])) : '';
 
@@ -41,12 +36,12 @@ try {
     $mail->isSMTP();
     $mail->Host       = 'smtp.gmail.com';
     $mail->SMTPAuth   = true;
-    $mail->Username   = 'TU_CORREO@gmail.com';          // Reemplazar con su correo Gmail
-    $mail->Password   = 'TU_CONTRASENA_DE_APLICACION'; // Contraseña de aplicación de 16 caracteres de Google
+    $mail->Username   = 'emanuelromanseron@gmail.com';
+    $mail->Password   = 'onxgsklrrnjymumq';
     $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
     $mail->Port       = 587;
 
-    $mail->setFrom('TU_CORREO@gmail.com', 'App Movil IoT');
+    $mail->setFrom('emanuelromanseron@gmail.com', 'App Movil IoT');
     $mail->addAddress($email);
 
     $mail->isHTML(true);

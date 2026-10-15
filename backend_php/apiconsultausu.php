@@ -1,20 +1,8 @@
 <?php
 header('Content-Type: application/json; charset=utf-8');
 
-// Configuración de conexión a MySQL
-$host = 'localhost';
-$user = 'root';
-$pass = 'clave'; // Modificar por la contraseña configurada en su AWS
-$db   = 'pnkcl_iot';
+require_once __DIR__ . '/db.php';
 
-$conn = mysqli_connect($host, $user, $pass, $db);
-
-if (!$conn) {
-    echo json_encode(array('estado' => '0', 'mensaje' => 'Error de conexión a la base de datos'));
-    exit();
-}
-
-mysqli_set_charset($conn, 'utf8');
 
 $usu  = isset($_GET['usu']) ? mysqli_real_escape_string($conn, trim($_GET['usu'])) : '';
 $clave = isset($_GET['pass']) ? mysqli_real_escape_string($conn, trim($_GET['pass'])) : '';

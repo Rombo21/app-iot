@@ -2,8 +2,8 @@
 -- SCRIPT SQL PARA BASE DE DATOS MYSQL EN AWS (pnkcl_iot)
 -- =======================================================
 
-CREATE DATABASE IF NOT EXISTS pnkcl_iot CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE pnkcl_iot;
+CREATE DATABASE IF NOT EXISTS evaluacion_iot CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE evaluacion_iot;
 
 CREATE TABLE IF NOT EXISTS Usuarios (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -23,5 +23,7 @@ INSERT INTO Usuarios (nombre, apellido, usuario, clave, bloqueado) VALUES
 ('Ana María', 'Pérez Soto', 'ana.perez@correo.cl', 'SecurePass1#', 0),
 ('Carlos Andrés', 'González Muñoz', 'carlos.gonzalez@correo.cl', 'Admin2025*', 0),
 ('Valentina Paz', 'Silva Castro', 'valentina.silva@correo.cl', 'ClaveTest8$', 0),
-('Roberto Ignacio', 'López Herrera', 'roberto.lopez@correo.cl', 'PassIot2025@', 0)
+('Roberto Ignacio', 'López Herrera', 'roberto.lopez@correo.cl', 'PassIot2025@', 0),
+('Emanuel Jesús', 'Román Serón', 'emanuelromanseron@gmail.com', 'IotPassword2026!', 0),
+('Emanuel Jesús', 'Román Serón', 'emanuel.roman@inacapmail.cl', 'IotPassword2026!', 0)
 ON DUPLICATE KEY UPDATE nombre=VALUES(nombre);

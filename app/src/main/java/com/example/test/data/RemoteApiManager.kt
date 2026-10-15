@@ -17,9 +17,7 @@ import org.json.JSONObject
 object RemoteApiManager {
 
     // -------------------------------------------------------
-    // IMPORTANTE: Cambiar esta URL por la IP/dominio de AWS
-    // -------------------------------------------------------
-    private const val BASE_URL = "http://52.2.255.205/"
+    private const val BASE_URL = "http://100.62.185.79/"
     private const val API_USUARIOS = "${BASE_URL}usuarios_api.php"
     private const val API_LOGIN    = "${BASE_URL}apiconsultausu.php"
     private const val API_PHPMAILER = "${BASE_URL}enviar_codigo_phpmailer.php"
