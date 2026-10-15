@@ -128,6 +128,39 @@
             android:textSize="16sp"
             android:textStyle="bold" />
 
+    <!-- 4. OPCION: CERRAR SESIÓN -->
+    <RelativeLayout
+        android:id="@+id/btnCerrarSesion"
+        android:layout_width="match_parent"
+        android:layout_height="72dp"
+        android:layout_marginTop="24dp"
+        android:background="@drawable/bg_menu_item"
+        android:clickable="true"
+        android:focusable="true"
+        android:foreground="?attr/selectableItemBackground">
+
+        <ImageView
+            android:id="@+id/icLogout"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="14dp"
+            android:contentDescription="Cerrar Sesión"
+            android:src="@android:drawable/ic_lock_power_off"
+            android:tint="#E53935" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toEndOf="@+id/icLogout"
+            android:layout_marginStart="18dp"
+            android:text="CERRAR SESIÓN"
+            android:textColor="#E53935"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
     </RelativeLayout>
 
 </LinearLayout>

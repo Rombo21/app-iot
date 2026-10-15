@@ -9,6 +9,7 @@ import com.example.test.databinding.ActivityUserEditBinding
 import com.example.test.model.User
 import com.example.test.util.AlertUtils
 import com.example.test.util.NetworkSyncManager
+import com.example.test.util.SessionManager
 import com.example.test.util.ValidationUtils
 
 class UserEditActivity : AppCompatActivity() {
@@ -115,6 +116,17 @@ class UserEditActivity : AppCompatActivity() {
 
         binding.btnEliminar.setOnClickListener {
             currentUser?.let { user ->
+                // — Proteger auto-eliminación: no se puede eliminar al usuario de la sesión activa
+                val sessionEmail = SessionManager.getEmail(this)
+                if (!sessionEmail.isNullOrEmpty() && sessionEmail.equals(user.email, ignoreCase = true)) {
+                    AlertUtils.showError(
+                        this,
+                        "Acción No Permitida",
+                        "No puedes eliminar tu propia cuenta mientras tienes la sesión activa."
+                    )
+                    return@setOnClickListener
+                }
+
                 AlertUtils.showConfirmation(this, "¿Estás seguro?",
                     "Esta acción eliminará al usuario permanentemente.") {
 

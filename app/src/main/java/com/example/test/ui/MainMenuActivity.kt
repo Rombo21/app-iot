@@ -6,6 +6,8 @@ import android.os.Handler
 import android.os.Looper
 import androidx.appcompat.app.AppCompatActivity
 import com.example.test.databinding.ActivityMainMenuBinding
+import com.example.test.util.AlertUtils
+import com.example.test.util.SessionManager
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -59,6 +61,22 @@ class MainMenuActivity : AppCompatActivity() {
         binding.btnMenuDesarrollador.setOnClickListener {
             val intent = Intent(this, DeveloperInfoActivity::class.java)
             startActivity(intent)
+        }
+
+        binding.btnCerrarSesion.setOnClickListener {
+            AlertUtils.showConfirmation(
+                this,
+                "Cerrar Sesión",
+                "¿Deseas cerrar la sesión actual?"
+            ) {
+                // Limpiar sesión y volver al Login sin posibilidad de volver atrás
+                SessionManager.clearSession(this)
+                val intent = Intent(this, LoginActivity::class.java).apply {
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                }
+                startActivity(intent)
+                finish()
+            }
         }
     }
 }

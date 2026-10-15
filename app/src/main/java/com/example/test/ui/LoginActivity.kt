@@ -9,6 +9,7 @@ import com.example.test.data.UserRepository
 import com.example.test.databinding.ActivityLoginBinding
 import com.example.test.util.AlertUtils
 import com.example.test.util.NetworkSyncManager
+import com.example.test.util.SessionManager
 import com.example.test.util.ValidationUtils
 
 class LoginActivity : AppCompatActivity() {
@@ -61,6 +62,10 @@ class LoginActivity : AppCompatActivity() {
                             if (localUser != null) {
                                 UserRepository.setBlocked(localUser.email, false)
                             }
+                            // Guardar sesión: email + nombre del usuario logueado
+                            val sessionEmail   = localUser?.email   ?: userOrEmail
+                            val sessionNombres = localUser?.nombres ?: result.nombre
+                            SessionManager.saveSession(this, sessionEmail, sessionNombres)
                             goToMainMenu()
                         }
                         is RemoteApiManager.LoginResult.Blocked -> {
@@ -95,7 +100,11 @@ class LoginActivity : AppCompatActivity() {
     /** Autenticación local contra SQLite cuando no hay red */
     private fun authenticateLocally(userOrEmail: String, password: String) {
         when (val auth = UserRepository.authenticate(userOrEmail, password)) {
-            is UserRepository.AuthResult.Success          -> goToMainMenu()
+            is UserRepository.AuthResult.Success -> {
+                val user = auth.user
+                SessionManager.saveSession(this, user.email, user.nombres)
+                goToMainMenu()
+            }
             is UserRepository.AuthResult.Blocked          -> {
                 AlertUtils.showError(this, "Cuenta Bloqueada",
                     "Esta cuenta ha sido bloqueada temporalmente debido a una solicitud de recuperación de contraseña.\n\nPor favor, valide el código de 6 dígitos enviado a su correo para reactivarla.")
