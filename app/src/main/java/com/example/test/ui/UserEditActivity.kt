@@ -116,19 +116,32 @@ class UserEditActivity : AppCompatActivity() {
 
         binding.btnEliminar.setOnClickListener {
             currentUser?.let { user ->
-                // — Proteger auto-eliminación: no se puede eliminar al usuario de la sesión activa
                 val sessionEmail = SessionManager.getEmail(this)
-                if (!sessionEmail.isNullOrEmpty() && sessionEmail.equals(user.email, ignoreCase = true)) {
-                    AlertUtils.showError(
-                        this,
-                        "Acción No Permitida",
-                        "No puedes eliminar tu propia cuenta mientras tienes la sesión activa."
-                    )
-                    return@setOnClickListener
-                }
+                val isSelf = !sessionEmail.isNullOrEmpty() &&
+                             sessionEmail.equals(user.email, ignoreCase = true)
 
-                AlertUtils.showConfirmation(this, "¿Estás seguro?",
-                    "Esta acción eliminará al usuario permanentemente.") {
+                // Mensaje de confirmación diferente si es su propia cuenta
+                val title   = if (isSelf) "¿Eliminar tu cuenta?" else "¿Estás seguro?"
+                val message = if (isSelf)
+                    "Estás a punto de eliminar tu propia cuenta. Se cerrará la sesión automáticamente."
+                else
+                    "Esta acción eliminará al usuario permanentemente."
+
+                AlertUtils.showConfirmation(this, title, message) {
+
+                    fun afterDelete() {
+                        if (isSelf) {
+                            // Cerrar sesión y volver al Login sin back stack
+                            SessionManager.clearSession(this)
+                            val intent = android.content.Intent(this, LoginActivity::class.java).apply {
+                                flags = android.content.Intent.FLAG_ACTIVITY_NEW_TASK or
+                                        android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK
+                            }
+                            startActivity(intent)
+                        } else {
+                            finish()
+                        }
+                    }
 
                     if (NetworkSyncManager.isOnline) {
                         // ─── ONLINE: eliminar en MySQL ─────────────────────
@@ -137,25 +150,27 @@ class UserEditActivity : AppCompatActivity() {
                             setCancelable(false)
                             show()
                         }
-                        RemoteApiManager.deleteUser(this, user.id, user.email) { success, errorMsg ->
+                        RemoteApiManager.deleteUser(this, user.id, user.email) { success, _ ->
                             loading.dismissWithAnimation()
+                            UserRepository.deleteUser(user.id, user.email, isOffline = false)
                             if (success) {
-                                // Eliminar también de SQLite local
-                                UserRepository.deleteUser(user.id, user.email, isOffline = false)
-                                AlertUtils.showSuccess(this, "¡Eliminado!",
-                                    "Usuario eliminado de MySQL correctamente.") { finish() }
+                                val msg = if (isSelf) "Tu cuenta ha sido eliminada." else "Usuario eliminado de MySQL correctamente."
+                                AlertUtils.showSuccess(this, "¡Eliminado!", msg) { afterDelete() }
                             } else {
-                                // Fallo → marcar para eliminar al reconectar
+                                // Fallo de red → marcar para eliminar al reconectar
                                 UserRepository.deleteUser(user.id, user.email, isOffline = true)
                                 AlertUtils.showWarning(this, "Sin Conexión",
-                                    "No se pudo conectar. Usuario marcado para eliminar al reconectar.") { finish() }
+                                    "No se pudo conectar. El usuario será eliminado de MySQL al recuperar la conexión.") { afterDelete() }
                             }
                         }
                     } else {
                         // ─── OFFLINE: soft delete en SQLite ────────────────
                         UserRepository.deleteUser(user.id, user.email, isOffline = true)
-                        AlertUtils.showSuccess(this, "¡Marcado para Eliminar!",
-                            "Se eliminará de MySQL automáticamente al recuperar la conexión.") { finish() }
+                        val msg = if (isSelf)
+                            "Tu cuenta se eliminará de MySQL al recuperar la conexión."
+                        else
+                            "Se eliminará de MySQL automáticamente al recuperar la conexión."
+                        AlertUtils.showSuccess(this, "¡Marcado para Eliminar!", msg) { afterDelete() }
                     }
                 }
             }
