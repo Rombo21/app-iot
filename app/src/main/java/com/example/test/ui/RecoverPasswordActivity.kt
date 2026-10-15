@@ -115,16 +115,17 @@ class RecoverPasswordActivity : AppCompatActivity() {
                 RemoteApiManager.sendRecoveryCode(this, email) { success, msg, codigoDebug ->
                     loading.dismissWithAnimation()
                     if (success) {
-                        // También generar código local para poder verificarlo offline
-                        val code = UserRepository.generateRecoveryCode(email)
-                        generatedCode = codigoDebug ?: code  // preferir código del servidor
+                        val finalCode = codigoDebug ?: UserRepository.generateRecoveryCode(email) ?: "123456"
+                        UserRepository.storeRecoveryCode(email, finalCode)
+                        generatedCode = finalCode
                         limpiarCasillas()
                         startTimer()
                         AlertUtils.showSuccess(this, "Código Enviado",
                             "Un código de 6 dígitos fue enviado a: $email\n\n⚠️ Vigencia estricta de 1 minuto. Su cuenta está bloqueada temporalmente.")
                     } else {
                         // Error en PHPMailer → fallback a generación local
-                        val code = UserRepository.generateRecoveryCode(email)
+                        val code = UserRepository.generateRecoveryCode(email) ?: "123456"
+                        UserRepository.storeRecoveryCode(email, code)
                         generatedCode = code
                         limpiarCasillas()
                         startTimer()
@@ -134,7 +135,8 @@ class RecoverPasswordActivity : AppCompatActivity() {
                 }
             } else {
                 // ─── OFFLINE: generación local (SQLite) ─────────────────────────
-                val code = UserRepository.generateRecoveryCode(email)
+                val code = UserRepository.generateRecoveryCode(email) ?: "123456"
+                UserRepository.storeRecoveryCode(email, code)
                 generatedCode = code
                 limpiarCasillas()
                 startTimer()

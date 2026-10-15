@@ -129,20 +129,25 @@ object UserRepository {
     // RECUPERACIÓN CON CÓDIGO DE 6 DÍGITOS Y 1 MINUTO
     // ==========================================
 
+    private val recoveryCodes = mutableMapOf<String, Pair<String, Long>>()
+
     fun generateRecoveryCode(email: String): String? {
         val user = findUserByEmail(email) ?: return null
         val code = String.format("%06d", Random.nextInt(100000, 1000000))
-        user.recoveryCode = code
-        user.recoveryCodeExpiry = System.currentTimeMillis() + 60000L // 60 segundos (1 minuto)
-
-        // Al solicitar recuperación, la cuenta se bloquea temporalmente (Requerimiento Pauta)
-        setBlocked(email, true)
+        storeRecoveryCode(email, code)
         return code
     }
 
+    fun storeRecoveryCode(email: String, code: String, expiryMs: Long = System.currentTimeMillis() + 60000L) {
+        val key = email.trim().lowercase()
+        recoveryCodes[key] = Pair(code, expiryMs)
+        setBlocked(email, true)
+    }
+
     fun getRemainingRecoverySeconds(email: String): Long {
-        val user = findUserByEmail(email) ?: return 0L
-        val remainingMs = user.recoveryCodeExpiry - System.currentTimeMillis()
+        val key = email.trim().lowercase()
+        val record = recoveryCodes[key] ?: return 0L
+        val remainingMs = record.second - System.currentTimeMillis()
         return if (remainingMs > 0) remainingMs / 1000L else 0L
     }
 
@@ -154,15 +159,24 @@ object UserRepository {
     }
 
     fun verifyRecoveryCode(email: String, enteredCode: String): CodeVerificationResult {
-        val user = findUserByEmail(email) ?: return CodeVerificationResult.UserNotFound
+        val key = email.trim().lowercase()
+        if (findUserByEmail(email) == null) {
+            return CodeVerificationResult.UserNotFound
+        }
+
+        val record = recoveryCodes[key] ?: return CodeVerificationResult.Expired
+        val (expectedCode, expiry) = record
         val now = System.currentTimeMillis()
 
-        if (user.recoveryCode == null || user.recoveryCodeExpiry < now) {
+        if (now > expiry) {
+            recoveryCodes.remove(key)
             return CodeVerificationResult.Expired
         }
-        if (user.recoveryCode != enteredCode.trim()) {
+        if (expectedCode != enteredCode.trim()) {
             return CodeVerificationResult.InvalidCode
         }
+        // Código válido
+        recoveryCodes.remove(key)
         return CodeVerificationResult.Valid
     }
 
