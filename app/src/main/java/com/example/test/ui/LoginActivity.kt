@@ -56,16 +56,20 @@ class LoginActivity : AppCompatActivity() {
                     loadingDialog.dismissWithAnimation()
                     when (result) {
                         is RemoteApiManager.LoginResult.Success -> {
-                            // Sincronizar el usuario en SQLite local si no existe
-                            val localUser = UserRepository.findUserByEmail(result.id.toString())
-                                ?: UserRepository.findUserByEmail(userOrEmail)
-                            if (localUser != null) {
-                                UserRepository.setBlocked(localUser.email, false)
-                            }
+                            val userEmail = if (result.email.isNotEmpty()) result.email else (if (userOrEmail.contains("@")) userOrEmail else "")
+                            val finalEmail = if (userEmail.isNotEmpty()) userEmail else userOrEmail
+
+                            // Guardar / actualizar de inmediato las credenciales en SQLite local para permitir acceso offline
+                            UserRepository.saveOrUpdateLocalUser(
+                                id = result.id,
+                                nombres = result.nombre,
+                                apellidos = result.apellido,
+                                email = finalEmail,
+                                clave = password
+                            )
+
                             // Guardar sesión: email + nombre del usuario logueado
-                            val sessionEmail   = localUser?.email   ?: userOrEmail
-                            val sessionNombres = localUser?.nombres ?: result.nombre
-                            SessionManager.saveSession(this, sessionEmail, sessionNombres)
+                            SessionManager.saveSession(this, finalEmail, result.nombre)
                             goToMainMenu()
                         }
                         is RemoteApiManager.LoginResult.Blocked -> {

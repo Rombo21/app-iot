@@ -19,7 +19,7 @@ $action = isset($_REQUEST['action']) ? trim($_REQUEST['action']) : '';
 switch ($action) {
 
     case 'list_users':
-        $sql    = "SELECT id, nombre, apellido, usuario, bloqueado FROM Usuarios ORDER BY nombre ASC";
+        $sql    = "SELECT id, nombre, apellido, usuario, clave, bloqueado FROM Usuarios ORDER BY nombre ASC";
         $result = mysqli_query($conn, $sql);
         $list   = [];
         if ($result) {

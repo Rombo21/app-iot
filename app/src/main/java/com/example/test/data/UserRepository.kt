@@ -118,6 +118,10 @@ object UserRepository {
         dbHelper?.sincronizarUsuariosRemotos(remoteUsers)
     }
 
+    fun saveOrUpdateLocalUser(id: Int, nombres: String, apellidos: String, email: String, clave: String) {
+        dbHelper?.upsertUsuarioLocal(id, nombres, apellidos, email, clave)
+    }
+
     fun deleteUser(id: Int, email: String = "", isOffline: Boolean = false): Boolean {
         if (dbHelper != null) {
             return dbHelper!!.eliminarUsuario(id, email, isOffline)

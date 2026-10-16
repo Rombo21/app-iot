@@ -27,7 +27,7 @@ object RemoteApiManager {
     // LOGIN: Autenticar credenciales contra MySQL
     // -------------------------------------------------------
     sealed class LoginResult {
-        data class Success(val id: Int, val nombre: String, val apellido: String) : LoginResult()
+        data class Success(val id: Int, val nombre: String, val apellido: String, val email: String) : LoginResult()
         object Blocked   : LoginResult()
         object InvalidCredentials : LoginResult()
         data class NetworkError(val msg: String) : LoginResult()
@@ -48,7 +48,8 @@ object RemoteApiManager {
                     "1"        -> onResult(LoginResult.Success(
                         id       = response.optInt("id"),
                         nombre   = response.optString("nombre"),
-                        apellido = response.optString("apellido")
+                        apellido = response.optString("apellido"),
+                        email    = response.optString("usuario")
                     ))
                     "bloqueado" -> onResult(LoginResult.Blocked)
                     else        -> onResult(LoginResult.InvalidCredentials)
@@ -84,7 +85,7 @@ object RemoteApiManager {
                             nombres   = obj.optString("nombre"),
                             apellidos = obj.optString("apellido"),
                             email     = obj.optString("usuario"),
-                            clave     = "",
+                            clave     = obj.optString("clave", ""),
                             isBlocked = obj.optInt("bloqueado") == 1
                         ))
                     }

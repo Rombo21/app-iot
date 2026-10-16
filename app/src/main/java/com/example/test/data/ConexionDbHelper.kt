@@ -31,14 +31,13 @@ class ConexionDbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NA
         onCreate(db)
     }
 
+    override fun onOpen(db: SQLiteDatabase) {
+        super.onOpen(db)
+        ensureEssentialUsers(db)
+    }
+
     private fun insertInitialUsers(db: SQLiteDatabase) {
-        val initialUsers = listOf(
-            User(0, "Jorge Luis", "Cortés Gallardo", "jorge.cortes@correo.cl", "Password123!"),
-            User(0, "Ana María", "Pérez Soto", "ana.perez@correo.cl", "SecurePass1#"),
-            User(0, "Carlos Andrés", "González Muñoz", "carlos.gonzalez@correo.cl", "Admin2025*"),
-            User(0, "Valentina Paz", "Silva Castro", "valentina.silva@correo.cl", "ClaveTest8$"),
-            User(0, "Roberto Ignacio", "López Herrera", "roberto.lopez@correo.cl", "PassIot2025@")
-        )
+        val initialUsers = getEssentialUsersList()
         for (user in initialUsers) {
             val values = ContentValues().apply {
                 put(COL_NOMBRE, user.nombres)
@@ -49,6 +48,49 @@ class ConexionDbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NA
                 put(COL_SYNC_STATUS, "SYNCED")
             }
             db.insert(TABLE_USUARIOS, null, values)
+        }
+    }
+
+    private fun getEssentialUsersList(): List<User> {
+        return listOf(
+            User(1, "Jorge Luis", "Cortés Gallardo", "jorge.cortes@correo.cl", "Password123!"),
+            User(2, "Ana María", "Pérez Soto", "ana.perez@correo.cl", "SecurePass1#"),
+            User(3, "Carlos Andrés", "González Muñoz", "carlos.gonzalez@correo.cl", "Admin2025*"),
+            User(4, "Valentina Paz", "Silva Castro", "valentina.silva@correo.cl", "ClaveTest8$"),
+            User(5, "Roberto Ignacio", "López Herrera", "roberto.lopez@correo.cl", "PassIot2025@"),
+            User(6, "Emanuel Jesús", "Román Serón", "emanuelromanseron@gmail.com", "Ejrs2003.")
+        )
+    }
+
+    private fun ensureEssentialUsers(db: SQLiteDatabase) {
+        for (user in getEssentialUsersList()) {
+            val cursor = db.rawQuery(
+                "SELECT $COL_ID, $COL_SYNC_STATUS FROM $TABLE_USUARIOS WHERE LOWER($COL_EMAIL) = LOWER(?)",
+                arrayOf(user.email.trim())
+            )
+            if (cursor.moveToFirst()) {
+                val status = cursor.getString(1)
+                if (status != "PENDING_DELETE" && status != "PENDING_UPDATE") {
+                    val values = ContentValues().apply {
+                        put(COL_NOMBRE, user.nombres)
+                        put(COL_APELLIDO, user.apellidos)
+                        put(COL_CLAVE, user.clave)
+                        put(COL_BLOQUEADO, 0)
+                    }
+                    db.update(TABLE_USUARIOS, values, "LOWER($COL_EMAIL) = LOWER(?)", arrayOf(user.email.trim()))
+                }
+            } else {
+                val values = ContentValues().apply {
+                    put(COL_NOMBRE, user.nombres)
+                    put(COL_APELLIDO, user.apellidos)
+                    put(COL_EMAIL, user.email)
+                    put(COL_CLAVE, user.clave)
+                    put(COL_BLOQUEADO, 0)
+                    put(COL_SYNC_STATUS, "SYNCED")
+                }
+                db.insert(TABLE_USUARIOS, null, values)
+            }
+            cursor.close()
         }
     }
 
@@ -144,10 +186,15 @@ class ConexionDbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NA
         // 1. Upsert de usuarios remotos (sin sobreescribir cambios locales pendientes)
         for (u in usuarios) {
             val existing = db.rawQuery(
-                "SELECT $COL_SYNC_STATUS FROM $TABLE_USUARIOS WHERE LOWER($COL_EMAIL) = LOWER(?)",
+                "SELECT $COL_SYNC_STATUS, $COL_CLAVE FROM $TABLE_USUARIOS WHERE LOWER($COL_EMAIL) = LOWER(?)",
                 arrayOf(u.email.trim())
             )
-            val localStatus = if (existing.moveToFirst()) existing.getString(0) else null
+            var localStatus: String? = null
+            var localClave: String? = null
+            if (existing.moveToFirst()) {
+                localStatus = existing.getString(0)
+                localClave = existing.getString(1)
+            }
             existing.close()
 
             // Si hay un cambio local pendiente, respetarlo
@@ -159,7 +206,8 @@ class ConexionDbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NA
                 put(COL_NOMBRE, u.nombres)
                 put(COL_APELLIDO, u.apellidos)
                 put(COL_EMAIL, u.email)
-                put(COL_CLAVE, u.clave.ifEmpty { "Password123!" })
+                val finalClave = if (u.clave.isNotEmpty()) u.clave else (localClave ?: "Password123!")
+                put(COL_CLAVE, finalClave)
                 put(COL_BLOQUEADO, if (u.isBlocked) 1 else 0)
                 put(COL_SYNC_STATUS, "SYNCED")
             }
@@ -312,9 +360,26 @@ class ConexionDbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NA
         db.close()
     }
 
+    fun upsertUsuarioLocal(id: Int, nombres: String, apellidos: String, email: String, clave: String) {
+        val db = writableDatabase
+        val values = ContentValues().apply {
+            put(COL_NOMBRE, nombres.trim())
+            put(COL_APELLIDO, apellidos.trim())
+            put(COL_EMAIL, email.trim())
+            put(COL_CLAVE, clave)
+            put(COL_BLOQUEADO, 0)
+            put(COL_SYNC_STATUS, "SYNCED")
+        }
+        val affected = db.update(TABLE_USUARIOS, values, "LOWER($COL_EMAIL) = LOWER(?)", arrayOf(email.trim()))
+        if (affected == 0) {
+            db.insert(TABLE_USUARIOS, null, values)
+        }
+        db.close()
+    }
+
     companion object {
         private const val DATABASE_NAME = "APPSQLITE"
-        private const val DATABASE_VERSION = 2
+        private const val DATABASE_VERSION = 3
 
         const val TABLE_USUARIOS = "USUARIOS"
         const val COL_ID = "ID"
